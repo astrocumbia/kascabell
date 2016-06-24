@@ -1,0 +1,22 @@
+{
+  "telnet":{
+      "host" : "127.0.0.1",
+      "port" : 4212,
+      "pass" : "test"
+  },
+  "domotic":{
+    "type": "amenizador",
+    "name": "Irvin",
+    "version": "0.1",
+    "ip":"10.10.7.28",
+    "providers": ["chismogate"],
+    "networks": ["127.0.0.1", "10.10.1.0"]
+  },
+  "vlc":{
+    "host":"127.0.0.1",
+    "port":4212,
+    "password": "test"
+  },
+  "path":"store",
+  "serial":"/dev/ttyUSB0"
+}

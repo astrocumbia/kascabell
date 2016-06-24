@@ -1,0 +1,83 @@
+html, body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: table;
+    font-weight: 100;
+
+}
+
+.container {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    background-color: #2a2d32; /*02131d 232323 2a2d32*/
+}
+.content {
+    text-align: center;
+    display: inline-block;
+}
+.title {
+    font-size: 96px;
+}
+
+
+.btn-round {
+    width: 40px;
+    height: 40px;
+    border-radius: 60%;
+    border-color: #00d5ff; /*AZUL NEON*/
+    border-width: medium;
+    background-color: #2a2d32;
+}
+
+.btn-round:hover {
+    width: 40px;
+    height: 40px;
+    border-radius: 60%;
+    border-color: #0fa2ac; /*AZUL NEON*/
+    border-width: medium;
+    background-color: #2a2d32;
+    color:#0fa2ac;
+}
+
+
+.btn-round:active {
+    width: 40px;
+    height: 40px;
+    border-radius: 60%;
+    border-color: #00d5ff; /*AZUL NEON*/
+    border-width: medium;
+    background-color: #2a2d32;
+}
+
+
+
+
+.glyphicon{
+  color: #00d5ff;
+}
+
+
+.btn-round.btn-lg {
+    width: 48px;
+    height: 48px;
+}
+
+.btn-round.btn-sm {
+    width: 34px;
+    height: 34px;
+}
+
+.btn-round.btn-xs {
+    width: 24px;
+    height: 24px;
+}
+
+#imgcover{
+  height: 180px;
+  width: 180px;
+}

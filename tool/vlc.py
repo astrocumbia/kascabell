@@ -1,0 +1,177 @@
+import os
+import telnetlib
+import time
+from tool import mongo
+import eyed3
+
+#host = "127.0.0.1"
+#password = "test"
+#port = 4212
+nt = None
+title = "None"
+songfile = "None"
+
+#def connect( host, port, password):
+def connect(host, port, password):
+    global nt
+
+    nt = telnetlib.Telnet( host, port )
+    #nt.write(password+"\n")
+    telnet_write(password)
+    read_line()
+    read_line()
+    read_line()
+
+def telnet_write( command ):
+    global nt
+    nt.write(bytes(command+"\n", 'utf-8'))
+    time.sleep(0.1)
+
+def read_line():
+    global nt
+    value = nt.read_until(bytes("\n", 'utf-8'))
+    return value.decode('utf-8')
+
+def queue( name ):
+    path = os.path.abspath( name )
+    telnet_write("enqueue " + path)
+
+
+def add( path, mysong , cover ):
+    #path = os.path.abspath( "public/songs/"+name )
+    #telnet_write("enqueue " + path)
+    print( "PATH: "+path )
+    print("MYSONG: "+mysong)
+    print("COVER: "+cover)
+    print("EYED3:" + os.path.abspath(  path+"/"+mysong ) )
+    song = eyed3.load( os.path.abspath(  path+"/"+mysong ) )
+
+    #data = { "file":mysong ,"artist":song.tag.artist } #"cover":cover, "album":song.tag.album, "title":song.tag.title }
+#    mongo.insert(data)
+
+
+def play():
+    telnet_write("play")
+
+def stop():
+    telnet_write("stop")
+
+
+def pause():
+    telnet_write("pause")
+
+def next():
+    telnet_write("next")
+
+def prev():
+    telnet_write("prev")
+
+def getVolume():
+    telnet_write("volume")
+    return read_line()
+
+def setVolume( value ):
+    telnet_write( "volume " + value )
+
+def exec(query):
+    print("====> VLCQUERY " + query)
+
+    l = query.split()
+    command = l[0]
+    if len(l) > 1 :
+        arg = l[1]
+
+    if command == "play":
+        print("=========> PLAY")
+        play()
+    if command == "pause":
+        pause()
+    if command == "stop":
+        stop()
+    if command == "next":
+        next()
+    if command == "prev":
+        prev()
+    if command == "getInfo":
+        getInfo()
+    if command == "queue":
+        queue(arg)
+    if command == "volume":
+        setVolume( int(arg) )
+
+
+'''
+def getInfo2():
+    global title, songfile
+    telnet_write("get_title")
+    title = read_line().replace(">","").replace("\n","").replace("\r","")
+
+    telnet_write("status")
+    name = read_line().replace("(newinput:file:///home/alumnos/Projects/amenizador/store/songs/","")
+    print("INFO2  "+ name)
+    name = name.replace(">","").replace(")","").replace(" ","").replace("\n","").replace("\r","")
+    read_line()
+    read_line()
+
+    print("INFO2  "+ name)
+    name = name.replace("(newinput:file:///home/alumnos/Projects/amenizador/store/songs/","").replace(".mp3","")
+    print("INFO2  "+ name)
+    songfile =  name
+    #return name
+'''
+
+def __getTitle():
+    telnet_write("get_title")
+    title = read_line().replace(">","").replace("\n","").replace("\r","")
+    return title
+
+def __getNameSong():
+    telnet_write("status")
+    name = read_line()
+    print("INFO2  "+ name)
+    name = name.replace(">","").replace(")","").replace(" ","").replace("\n","").replace("\r","")
+    read_line()
+    read_line()
+
+    print("INFO2  "+ name)
+    name = name.replace("(newinput:file:///home/alumnos/Projects/amenizador/store/songs/","").replace(".mp3","")
+    print("INFO2  "+ name)
+
+    return name
+
+
+def getInfo():
+    global title, songfile
+    if isPlaying():
+        title = __getTitle()
+        songfile = __getNameSong()
+    else:
+        title = "None"
+        songfile = "None"
+
+
+def isPlaying():
+    telnet_write("is_playing")
+    s = int( read_line().replace("> ","") )
+    print(s)
+    if s == 1:
+        return True
+    return False
+
+'''
+def getInfo():
+    global title
+    telnet_write("get_title")
+    title = read_line().replace(">","").replace("\n","").replace("\r","")
+'''
+
+def getTitle():
+    return title
+
+def getFile():
+    return img
+
+def getStatus():
+    global title
+    global songfile
+    return {"title": title, "filesong": songfile }
