@@ -10,6 +10,8 @@ import eyed3
 nt = None
 title = "None"
 songfile = "None"
+volume = 0
+active = False
 
 #def connect( host, port, password):
 def connect(host, port, password):
@@ -68,7 +70,7 @@ def prev():
 
 def getVolume():
     telnet_write("volume")
-    return read_line()
+    return read_line().replace(">","").replace("\r\n","").replace(" ","")
 
 def setVolume( value ):
     telnet_write( "volume " + value )
@@ -77,10 +79,12 @@ def exec(query):
     print("====> VLCQUERY " + query)
 
     l = query.split()
+
     command = l[0]
     if len(l) > 1 :
         arg = l[1]
-
+        print(command)
+        print(arg)
     if command == "play":
         print("=========> PLAY")
         play()
@@ -97,28 +101,9 @@ def exec(query):
     if command == "queue":
         queue(arg)
     if command == "volume":
-        setVolume( int(arg) )
+        print("SET VOLUME")
+        setVolume( arg )
 
-
-'''
-def getInfo2():
-    global title, songfile
-    telnet_write("get_title")
-    title = read_line().replace(">","").replace("\n","").replace("\r","")
-
-    telnet_write("status")
-    name = read_line().replace("(newinput:file:///home/alumnos/Projects/amenizador/store/songs/","")
-    print("INFO2  "+ name)
-    name = name.replace(">","").replace(")","").replace(" ","").replace("\n","").replace("\r","")
-    read_line()
-    read_line()
-
-    print("INFO2  "+ name)
-    name = name.replace("(newinput:file:///home/alumnos/Projects/amenizador/store/songs/","").replace(".mp3","")
-    print("INFO2  "+ name)
-    songfile =  name
-    #return name
-'''
 
 def __getTitle():
     telnet_write("get_title")
@@ -142,12 +127,18 @@ def __getNameSong():
 
 def getInfo():
     global title, songfile
+    global volume
+    global active
     if isPlaying():
         title = __getTitle()
         songfile = __getNameSong()
+        volume = getVolume()
+        active = isPlaying()
     else:
-        title = "None"
-        songfile = "None"
+        title = "dafult"
+        songfile = "default"
+        volume = 20
+        active = False
 
 
 def isPlaying():
@@ -158,12 +149,6 @@ def isPlaying():
         return True
     return False
 
-'''
-def getInfo():
-    global title
-    telnet_write("get_title")
-    title = read_line().replace(">","").replace("\n","").replace("\r","")
-'''
 
 def getTitle():
     return title
@@ -174,4 +159,6 @@ def getFile():
 def getStatus():
     global title
     global songfile
-    return {"title": title, "filesong": songfile }
+    global volume
+    global active
+    return {"title": title, "filesong": songfile, "img":"store/imgs/"+songfile+".jpg" , "volume":int(volume), "active":active }

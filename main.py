@@ -14,6 +14,7 @@ import subprocess
 from tool import config
 from tool import Arduino
 from tool import vlc
+from tool import scanner
 
 
 #******************************#
@@ -22,6 +23,7 @@ from tool import vlc
 q = Queue() # For querys to arduino and vlc states
 pool = ThreadPoolExecutor(10)
 arduino_state = {} # for query to arduino module
+PORT = 8000
 
 
 #*************************************#
@@ -43,8 +45,17 @@ def index():
 	global arduino_state
 	response.status = 200
 	response.content_type = 'json'
+	response.body = json.dumps( config.getDomotic() ) #'domotic'#json.dumps( config )
+	return response
+
+@get('/arduino')
+def index():
+	global arduino_state
+	response.status = 200
+	response.content_type = 'json'
 	response.body = json.dumps(arduino_state) #'domotic'#json.dumps( config )
 	return response
+
 
 @post('/upload')
 def index():
@@ -63,32 +74,38 @@ def index():
     #vlc.add( "store/songs", songname.decode('utf-8'), covername.decode('utf-8') )
     #vlc.queue("store/songs/"+songname)
     q.put("queue "+"store/songs/"+songname)
-    redirect('/index')
+    redirect('/gui')
 	#audio = eyed3.load("03-Decks-Dark.mp3")
     #return hashlib.sha224(song.filename.encode('utf-8')).hexdigest()
 
 @get('/upload')
 def index():
-    return template('views/upload')
+    return template('views/uploads')
 
 #  Regresar todos los archivos necesarios (img,css,js)
 @route('<path:path>')
 def server_static(path):
 	return static_file(path,root='./')
 
-@get('/music')
+
+@get('/gui')
 def index():
 	return template('views/index')
 
 @post('/music/volume')
 def index():
     volume = request.forms.get('volume')
+    print(volume)
     q.put("volume "+volume)
 
 @get('/music/play')
 def play():
 	print("======>>>>  WEB PLAYY")
 	q.put("play")
+
+@get('/music/prev')
+def prev():
+	q.put("prev")
 
 @get('/music/next')
 def next():
@@ -101,6 +118,7 @@ def pause():
 @get('/music/stop')
 def stop():
 	q.put('stop')
+
 
 @get('/music/title')
 def index():
@@ -148,7 +166,10 @@ def addSongs():
 		q.put("queue "+"store/songs/"+item)
 
 def init():
+	global PORT
 	config.load('config.json')
+	PORT = scanner.explore( config.getDomotic()['networks'] )
+
 	subprocess.Popen('tool/start.sh', shell=True, executable='/bin/bash')
 	time.sleep(2)
 	confVLC = config.getVlc()
@@ -161,8 +182,9 @@ def init():
 #                  MAIN               #
 #*************************************#
 if __name__=="__main__":
+
 	init()
 	pool.submit(readArduino)
-	pool.submit( run, server='paste' ,host='127.0.0.1', port=8000 )
+	pool.submit( run, server='paste' ,host='0.0.0.0', port=PORT )
 	pool.submit( runVLC )
 	pool.submit( VlcGetStatus )
