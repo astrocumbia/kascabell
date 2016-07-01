@@ -1,0 +1,6 @@
+requests
+pymongo
+telnetlib
+pyserial
+eyeD3
+bottle

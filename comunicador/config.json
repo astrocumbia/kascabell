@@ -1,0 +1,7 @@
+{
+    "type": "comunicador",
+    "name": "comu1",
+    "version": "0.0.1",
+    "port": 9100,
+    "locations": ["a", "b"]
+}

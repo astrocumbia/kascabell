@@ -5,11 +5,12 @@ import json
 
 ser = None
 
+
 def init(device):
-    global ser
-    ser = serial.Serial(port=device, baudrate=9600)
+	global ser
+	ser = serial.Serial(port=device, baudrate=9600)
 
 def getState():
-    global ser
-    response = ser.readline()
-    return json.loads( response.decode("utf-8") )
+	global ser
+	response = ser.readline()
+	return json.loads( response.decode("utf-8") )
